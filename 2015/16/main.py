@@ -1,55 +1,45 @@
 import re
 
-things = [
-        'children', 'cats', 'samoyeds', 'pomeranians', 'akitas', 'vizslas',
-        'goldfish', 'trees', 'cars', 'perfumes'
-        ]
-
-target = {
-        "children": 3,
-        "cats": 7,
-        "samoyeds": 2,
-        "pomeranians": 3,
-        "akitas": 0,
-        "vizslas": 0,
-        "goldfish": 5,
-        "trees": 3,
-        "cars": 2,
-        "perfumes": 1
+things = {
+    'children': '==',
+    'cats': '>',
+    'samoyeds': '==',
+    'pomeranians': '<',
+    'akitas': '==',
+    'vizslas': '==',
+    'goldfish': '<',
+    'trees': '>',
+    'cars': '==',
+    'perfumes': '=='
 }
 
-aunts = []
+target = {
+    "children": 3,
+    "cats": 7,
+    "samoyeds": 2,
+    "pomeranians": 3,
+    "akitas": 0,
+    "vizslas": 0,
+    "goldfish": 5,
+    "trees": 3,
+    "cars": 2,
+    "perfumes": 1
+}
 
-possibles = []
+aunt_pattern = re.compile(
+    r"Sue (\d+): ([a-zA-Z]+): (\d+), ([a-zA-Z]+): (\d+), ([a-zA-Z]+): (\d+)")
 
-def read_data():
-    with open("input.txt", 'r') as f:
-        for l in f:
-            s = l.split()
-            a = [int(s[1])]
-            for i in range(2, len(s), 2):
-                a.append((s[i], int(s[i+1])))
-            aunts.append(a)
-
-
-    for x in aunts:
-        for c in x[1:]:
-            if target[c[0]] == c[1] and c[0] not in ["cats", "trees", "pomeranians", "goldfish"] :
-                continue
-            elif c[0] in ["cats", "trees"]:
-                if target[c[0]] >= c[1]:
-                    continue
-                else:
-                    break
-            elif c[0] in ["pomeranians", "goldfish"]:
-                if target[c[0]] <= c[1]:
-                    continue
-                else:
-                    break
-            else:
-                break
-        else:
-            possibles.append(x)
-
-    for y in possibles:
-        print(y)
+with open("input.txt") as f:
+    for line in f:
+        match = aunt_pattern.match(line)
+        if match:
+            comparisons_keys = match.groups()[1::2]
+            comparisons_values = map(int, match.groups()[2::2])
+            comparisons_ops = map(things.get, comparisons_keys)
+            aunt = dict(zip(comparisons_keys, comparisons_values))
+            if all(
+                eval(
+                    f"{aunt[key]} {op} {target[key]}"
+                ) for key, op in zip(comparisons_keys, comparisons_ops)
+            ):
+                print(match.groups()[0])
