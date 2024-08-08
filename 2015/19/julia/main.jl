@@ -27,3 +27,6 @@ for (base, target) ∈ productions
   end
 end
 @info "Part 1 answer is" length(set_of_possibles)
+
+# Part 2 can be solved iwth a formula and counting "Rn", "Ar" and "Y" elements
+# For more info, see https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/
